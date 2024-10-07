@@ -1,0 +1,103 @@
+#include <iostream>
+#include <string>
+#include <iomanip>  
+
+using namespace std;
+
+// Define a structure for the movie review node
+struct ReviewNode {
+    float rating;
+    string comments;
+    ReviewNode* next;
+};
+
+// Function to add a new node to the head of the linked list
+void addAtHead(ReviewNode*& head, float rating, string comments) {
+    ReviewNode* newNode = new ReviewNode{rating, comments, head};
+    head = newNode;
+}
+
+// Function to add a new node to the tail of the linked list
+void addAtTail(ReviewNode*& head, float rating, string comments) {
+    ReviewNode* newNode = new ReviewNode{rating, comments, nullptr};
+    
+    if (!head) {  // If the list is empty, set the new node as the head
+        head = newNode;
+    } else {
+        ReviewNode* temp = head;
+        while (temp->next != nullptr) {  
+            temp = temp->next;
+        }
+        temp->next = newNode;  
+    }
+}
+
+
+void displayReviews(ReviewNode* head) {
+    if (!head) {
+        cout << "No reviews to display." << endl;
+        return;
+    }
+    
+    float totalRating = 0.0;
+    int count = 0;
+    ReviewNode* temp = head;
+    
+    cout << "Outputting all reviews:" << endl;
+    while (temp) {
+        count++;
+        cout << "> Review #" << count << ": " << temp->rating << ": " << temp->comments << endl;
+        totalRating += temp->rating;
+        temp = temp->next;
+    }
+    
+    cout << "> Average: " << setprecision(5) << totalRating / count << endl;
+}
+
+int main() {
+    ReviewNode* head = nullptr;
+    int choice;
+    
+    cout << "Which linked list method should we use?" << endl;
+    cout << "    [1] New nodes are added at the head of the linked list" << endl;
+    cout << "    [2] New nodes are added at the tail of the linked list" << endl;
+    cout << "Choice: ";
+    cin >> choice;
+
+    char anotherReview;
+    do {
+        float rating;
+        string comments;
+        
+        cout << "Enter review rating 0-5: ";
+        cin >> rating;
+        cin.ignore();  // Ignore the newline after the rating input
+        cout << "Enter review comments: ";
+        getline(cin, comments);
+        
+        if (choice == 1) {
+            addAtHead(head, rating, comments);
+        } else if (choice == 2) {
+            addAtTail(head, rating, comments);
+        } else {
+            cout << "Invalid choice." << endl;
+            return 1;
+        }
+        
+        cout << "Enter another review? Y/N: ";
+        cin >> anotherReview;
+        
+    } while (anotherReview == 'Y' || anotherReview == 'y');
+    
+    
+    displayReviews(head);
+    
+    
+    while (head) {
+        ReviewNode* temp = head;
+        head = head->next;
+        delete temp;
+    }
+    
+    return 0;
+}
